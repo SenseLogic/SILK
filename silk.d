@@ -798,7 +798,7 @@ void main(
         writeln( "Examples :" );
         writeln( "    silk --smooth 1 9 128.0 input.bmp output.bmp" );
         writeln( "    silk --highlight 0.25 2.0 input.bmp output.bmp" );
-        writeln( "    silk --smooth 1 9 128.0 --store --highlight 0.25 2.0 --posterize 3 1  input.bmp output.bmp" );
+        writeln( "    silk --smooth 1 9 128.0 --store --highlight 0.25 2.0 --posterize 3 1 input.bmp output.bmp" );
 
         Abort( "Invalid arguments : " ~ argument_array.to!string() );
     }

@@ -55,7 +55,7 @@ silk --highlight 0.25 2.0 input.bmp output.bmp
 Highlight the image.
 
 ```bash
-silk --smooth 1 9 128.0 --store --highlight 0.25 2.0 --posterize 3 1  input.bmp output.bmp
+silk --smooth 1 9 128.0 --store --highlight 0.25 2.0 --posterize 3 1 input.bmp output.bmp
 ```
 
 Smooth, highlight and posterize the image.
