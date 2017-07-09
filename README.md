@@ -37,7 +37,7 @@ silk [options] input_file.bmp output_file.bmp
 --store
 --smooth pass_count pixel_distance color_distance
 --highlight brightness_offset contrast_factor
---posterize color_component_count mode
+--posterize color_component_count clustering_mode
 ```
 
 ### Examples

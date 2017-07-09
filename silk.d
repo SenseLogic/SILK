@@ -579,7 +579,7 @@ struct IMAGE
     
     void Posterize(
         long component_count,
-        long mode
+        long clustering_mode
         )
     {
         long
@@ -592,7 +592,7 @@ struct IMAGE
             
         SetPaintArray( component_count );
 
-        if ( ( mode & 2 ) == 0 )
+        if ( ( clustering_mode & 2 ) == 0 )
         {
             foreach ( ref paint; PaintArray )
             {
@@ -604,7 +604,7 @@ struct IMAGE
             {
                 pixel.PaintIndex = GetPaintIndex( pixel.Color );
 
-                if ( ( mode & 1 ) == 0 )
+                if ( ( clustering_mode & 1 ) == 0 )
                 {
                     PaintArray[ pixel.PaintIndex ].AddColor( pixel.Color );
                 }
@@ -631,7 +631,7 @@ struct IMAGE
                 {
                     pixel_index = GetPixelIndex( line_index, column_index );
 
-                    if ( ( mode & 4 ) == 0
+                    if ( ( clustering_mode & 4 ) == 0
                          && PixelArray[ pixel_index ].PaintIndex != 0
                          && PixelArray[ pixel_index ].PaintIndex != PaintArray.length - 3 )
                     {
@@ -794,7 +794,7 @@ void main(
         writeln( "    --store" );
         writeln( "    --smooth pass_count pixel_distance color_distance" );
         writeln( "    --highlight brightness_offset contrast_factor" );
-        writeln( "    --posterize color_component_count mode" );
+        writeln( "    --posterize color_component_count clustering_mode" );
         writeln( "Examples :" );
         writeln( "    silk --smooth 1 9 128.0 input.bmp output.bmp" );
         writeln( "    silk --highlight 0.25 2.0 input.bmp output.bmp" );
