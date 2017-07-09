@@ -40,15 +40,15 @@ struct COLOR
         Red,
         Green,
         Blue;
-        
+
     // ~~
     
     void Clear(
         )
     {
-        Red = 0;
-        Green = 0;
-        Blue = 0;
+        Red = 0.0f;
+        Green = 0.0f;
+        Blue = 0.0f;
     }
     
     // ~~
@@ -168,16 +168,29 @@ struct PAINT
         AverageColor;
     long
         PixelCount;
-    
+
     // ~~
-    
+
+    void Set(
+        float red = 0.0f,
+        float green = 0.0f,
+        float blue = 0.0f
+        )
+    {
+        Color.Set( red, green, blue );
+
+        AverageColor = Color;
+    }
+
+    // ~~
+
     void AddColor(
         ref COLOR color
         )
     {
         AverageColor.Add( color );
-        
-        ++PixelCount;        
+
+        ++PixelCount;
     }
     
     // ~~
@@ -189,6 +202,12 @@ struct PAINT
         {
             AverageColor.Divide( PixelCount );
         }
+        else
+        {
+            AverageColor = Color;
+        }
+
+        Color = AverageColor;
     }
 }
     
@@ -518,9 +537,7 @@ struct IMAGE
             {
                 foreach ( blue; component_array )
                 {
-                    paint.Color.Red = red;
-                    paint.Color.Green = green;
-                    paint.Color.Blue = blue;
+                    paint.Set( red, green, blue );
                     
                     PaintArray ~= paint;
                 }
@@ -567,6 +584,9 @@ struct IMAGE
     {
         long
             pixel_index;
+        PAINT
+            black_paint,
+            white_paint;
 
         writeln( "Posterizing image : ", component_count );
             
@@ -599,14 +619,30 @@ struct IMAGE
                 paint.SetAverageColor();
             }
 
+            black_paint.Set( 0, 0, 0 );
+            PaintArray ~= black_paint;
+
+            white_paint.Set( 255, 255, 255 );
+            PaintArray ~= white_paint;
+
             foreach ( line_index; 0 .. LineCount )
             {
                 foreach ( column_index; 0 .. ColumnCount )
                 {
                     pixel_index = GetPixelIndex( line_index, column_index );
 
-                    PixelArray[ pixel_index ].Color
-                        = PaintArray[ PixelArray[ pixel_index ].PaintIndex ].AverageColor;
+                    if ( ( mode & 4 ) == 0
+                         && PixelArray[ pixel_index ].PaintIndex != 0
+                         && PixelArray[ pixel_index ].PaintIndex != PaintArray.length - 3 )
+                    {
+                        PixelArray[ pixel_index ].Color
+                            = PaintArray[ PixelArray[ pixel_index ].PaintIndex ].AverageColor;
+                    }
+                    else
+                    {
+                        PixelArray[ pixel_index ].Color
+                            = PaintArray[ GetPaintIndex( PixelArray[ pixel_index ].Color ) ].AverageColor;
+                    }
                 }
             }
         }
