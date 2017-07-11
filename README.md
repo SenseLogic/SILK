@@ -7,10 +7,6 @@ Simple image enhancer.
 ![](https://github.com/senselogic/SILK/blob/master/SAMPLE/mountain.png)
 ![](https://github.com/senselogic/SILK/blob/master/SAMPLE/mountain_smooth.png)
 
-![](https://github.com/senselogic/SILK/blob/master/SAMPLE/sea.png)
-![](https://github.com/senselogic/SILK/blob/master/SAMPLE/sea_smooth.png)
-![](https://github.com/senselogic/SILK/blob/master/SAMPLE/sea_highlight.png)
-
 ![](https://github.com/senselogic/SILK/blob/master/SAMPLE/tux.png)
 ![](https://github.com/senselogic/SILK/blob/master/SAMPLE/tux_smooth.png)
 ![](https://github.com/senselogic/SILK/blob/master/SAMPLE/tux_smooth_highlight_posterize.png)
