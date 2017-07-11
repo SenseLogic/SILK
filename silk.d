@@ -404,6 +404,27 @@ struct IMAGE
             }
         }
     }
+    
+    // ~~
+    
+    void SetByteArray(
+        )
+    {
+        long
+            byte_index,
+            pixel_index;
+            
+        foreach ( line_index; 0 .. LineCount )
+        {
+            foreach ( column_index; 0 .. ColumnCount )
+            {
+                pixel_index = line_index * ColumnCount + column_index;
+                byte_index = FirstByteIndex + line_index * LineByteCount + column_index * PixelByteCount;
+
+                SetNatural24( byte_index, PixelArray[ pixel_index ].Color.GetNatural24() );
+            }
+        }
+    }
 
     // ~~
 
@@ -657,27 +678,6 @@ struct IMAGE
                     PixelArray[ pixel_index ].Color
                         = PaintArray[ GetPaintIndex( PixelArray[ pixel_index ].Color ) ].Color;
                 }
-            }
-        }
-    }
-    
-    // ~~
-    
-    void SetByteArray(
-        )
-    {
-        long
-            byte_index,
-            pixel_index;
-            
-        foreach ( line_index; 0 .. LineCount )
-        {
-            foreach ( column_index; 0 .. ColumnCount )
-            {
-                pixel_index = line_index * ColumnCount + column_index;
-                byte_index = FirstByteIndex + line_index * LineByteCount + column_index * PixelByteCount;
-
-                SetNatural24( byte_index, PixelArray[ pixel_index ].Color.GetNatural24() );
             }
         }
     }
