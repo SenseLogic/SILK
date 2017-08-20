@@ -1,3 +1,5 @@
+![](https://github.com/senselogic/SILK/blob/master/LOGO/silk.png)
+
 # Silk
 
 Simple image enhancer.
