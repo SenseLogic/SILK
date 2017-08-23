@@ -42,7 +42,7 @@ struct COLOR
         Blue;
 
     // ~~
-    
+
     void Clear(
         )
     {
@@ -50,9 +50,9 @@ struct COLOR
         Green = 0.0f;
         Blue = 0.0f;
     }
-    
+
     // ~~
-    
+
     void Set(
         float red = 0.0f,
         float green = 0.0f,
@@ -63,9 +63,9 @@ struct COLOR
         Green = green;
         Blue = blue;
     }
-    
+
     // ~~
-    
+
     void Add(
         ref COLOR color
         )
@@ -74,9 +74,9 @@ struct COLOR
         Green += color.Green;
         Blue += color.Blue;
     }
-    
+
     // ~~
-    
+
     void Divide(
         float divider
         )
@@ -85,9 +85,9 @@ struct COLOR
         Green /= divider;
         Blue /= divider;
     }
-    
+
     // ~~
-        
+
     void SetFromNatural24(
         long natural
         )
@@ -98,17 +98,17 @@ struct COLOR
             natural & 255
             );
     }
-    
+
     // ~~
-    
+
     long GetNatural24(
         )
     {
         return Blue.to!long() | ( Green.to!long() << 8 ) | ( Red.to!long() << 16 );
     }
-    
+
     // ~~
-    
+
     float GetDistance(
         ref COLOR color
         )
@@ -119,22 +119,22 @@ struct COLOR
             red_mean,
             red_offset,
             square_distance;
-        
+
         red_mean = ( Red + color.Red ) * 0.5f;
         red_offset = Red - color.Red;
         green_offset = Green - color.Green;
         blue_offset = Blue - color.Blue;
-        
+
         square_distance
             = ( ( ( 512.0f + red_mean ) * red_offset * red_offset ) / 256.0f )
               + 4.0f * green_offset * green_offset
               + ( ( ( 767.0f - red_mean ) * blue_offset * blue_offset ) / 256.0f );
-        
+
         return sqrt( square_distance );
     }
-    
+
     // ~~
-    
+
     float GetBrightnessContrastComponent(
         float component,
         float brightness_offset,
@@ -142,12 +142,12 @@ struct COLOR
         )
     {
         component = ( ( component / 255.0f - 0.5f ) * contrast_factor + 0.5f + brightness_offset ) * 255.0f;
-        
+
         return min( max( component, 0.0f ), 255.0f );
     }
-    
+
     // ~~
-    
+
     void Highlight(
         float brightness_offset,
         float contrast_factor
@@ -158,7 +158,7 @@ struct COLOR
         Blue = GetBrightnessContrastComponent( Blue, brightness_offset, contrast_factor );
     }
 }
-    
+
 // ~~
 
 struct PAINT
@@ -192,9 +192,9 @@ struct PAINT
 
         ++PixelCount;
     }
-    
+
     // ~~
-    
+
     void SetAverageColor(
         )
     {
@@ -210,7 +210,7 @@ struct PAINT
         Color = AverageColor;
     }
 }
-    
+
 // ~~
 
 struct PIXEL
@@ -240,24 +240,24 @@ struct IMAGE
         PixelArray;
     PAINT[]
         PaintArray;
-        
-    // ~~ 
-    
+
+    // ~~
+
     long GetNatural8(
         long byte_index
         )
     {
         return ByteArray[ byte_index ];
     }
-    
-    // ~~ 
-    
+
+    // ~~
+
     long GetNatural16(
         long byte_index
         )
     {
-        return 
-            GetNatural8( byte_index ) 
+        return
+            GetNatural8( byte_index )
             | ( GetNatural8( byte_index + 1 ) << 8 );
     }
 
@@ -285,9 +285,9 @@ struct IMAGE
             | ( GetNatural8( byte_index + 2 ) << 16 )
             | ( GetNatural8( byte_index + 3 ) << 24 );
     }
-    
+
     // ~~
-    
+
     void SetNatural24(
         long byte_index,
         long natural
@@ -297,17 +297,17 @@ struct IMAGE
         ByteArray[ byte_index + 1 ] = ( ( natural >> 8 ) & 255 ).to!ubyte();
         ByteArray[ byte_index + 2 ] = ( ( natural >> 16 ) & 255 ).to!ubyte();
     }
-        
+
     // ~~
-    
+
     void ReadFile(
         string file_path
         )
     {
         writeln( "Reading file : ", file_path );
-        
+
         ByteArray = cast( ubyte[] )file_path.read();
-        
+
         if ( GetNatural8( 0 ) == 'B'
              && GetNatural8( 1 ) == 'M'
              && GetNatural32( 30 ) == 0 )
@@ -321,18 +321,18 @@ struct IMAGE
         }
         else
         {
-            Abort( "Invalid file format" ); 
+            Abort( "Invalid file format" );
         }
     }
-    
+
     // ~~
-    
+
     void WriteFile(
         string file_path
         )
     {
         writeln( "Writing file : ", file_path );
-        
+
         file_path.write( ByteArray );
     }
 
@@ -365,9 +365,9 @@ struct IMAGE
             return -1;
         }
     }
-    
+
     // ~~
-    
+
     long GetByteIndex(
         long line_index,
         long column_index
@@ -375,9 +375,9 @@ struct IMAGE
     {
         return FirstByteIndex + line_index * LineByteCount + column_index * PixelByteCount;
     }
-    
+
     // ~~
-    
+
     void SetPixelArray(
         )
     {
@@ -386,10 +386,10 @@ struct IMAGE
             pixel_index;
         COLOR
             color;
-            
+
         PixelArray = [];
         PixelArray.length = PixelCount;
-        
+
         foreach ( line_index; 0 .. LineCount )
         {
             foreach ( column_index; 0 .. ColumnCount )
@@ -404,16 +404,16 @@ struct IMAGE
             }
         }
     }
-    
+
     // ~~
-    
+
     void SetByteArray(
         )
     {
         long
             byte_index,
             pixel_index;
-            
+
         foreach ( line_index; 0 .. LineCount )
         {
             foreach ( column_index; 0 .. ColumnCount )
@@ -440,7 +440,7 @@ struct IMAGE
     }
 
     // ~~
-    
+
     void Highlight(
         float brightness_offset,
         float contrast_factor
@@ -466,7 +466,7 @@ struct IMAGE
     }
 
     // ~~
-    
+
     void Smooth(
         long pass_count,
         long pixel_distance,
@@ -513,7 +513,7 @@ struct IMAGE
                                 other_pixel_color = PixelArray[ other_pixel_index ].PriorColor;
 
                                 if ( other_pixel_color.GetDistance( pixel_color )
-                                    < color_distance )
+                                     < color_distance )
                                 {
                                     average_color.Add( other_pixel_color );
 
@@ -533,18 +533,18 @@ struct IMAGE
             }
         }
     }
-    
+
     // ~~
-    
+
     void SetPaintArray(
         long component_count
         )
     {
         float[]
-            component_array;        
+            component_array;
         PAINT
             paint;
-            
+
         component_array.length = component_count;
 
         foreach ( component_index; 0 .. component_count )
@@ -559,15 +559,15 @@ struct IMAGE
                 foreach ( blue; component_array )
                 {
                     paint.Set( red, green, blue );
-                    
+
                     PaintArray ~= paint;
                 }
             }
         }
     }
-    
+
     // ~~
-        
+
     long GetPaintIndex(
         ref COLOR color
         )
@@ -577,14 +577,14 @@ struct IMAGE
             color_distance;
         long
             best_paint_index;
-            
+
         best_paint_index = -1;
         best_color_distance = 0.0;
-               
+
         foreach ( paint_index; 0 .. PaintArray.length )
         {
             color_distance = color.GetDistance( PaintArray[ paint_index ].Color );
-            
+
             if ( best_paint_index < 0
                  || color_distance < best_color_distance )
             {
@@ -592,12 +592,12 @@ struct IMAGE
                 best_color_distance = color_distance;
             }
         }
-        
+
         return best_paint_index;
     }
-    
+
     // ~~
-    
+
     void Posterize(
         long component_count,
         long clustering_mode
@@ -610,7 +610,7 @@ struct IMAGE
             white_paint;
 
         writeln( "Posterizing image : ", component_count );
-            
+
         SetPaintArray( component_count );
 
         if ( ( clustering_mode & 2 ) == 0 )
@@ -702,7 +702,7 @@ void Abort(
 
     exit( -1 );
 }
-    
+
 // ~~
 
 void main(
@@ -742,7 +742,7 @@ void main(
                 image.Store();
             }
             else if ( option == "--smooth"
-                 && argument_array.length >= 3 )
+                      && argument_array.length >= 3 )
             {
                 image.Smooth(
                     argument_array[ 0 ].to!long(),
