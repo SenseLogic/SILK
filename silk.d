@@ -654,7 +654,7 @@ struct IMAGE
 
                     if ( ( clustering_mode & 4 ) == 0
                          && PixelArray[ pixel_index ].PaintIndex != 0
-                         && PixelArray[ pixel_index ].PaintIndex != PaintArray.length - 3 )
+                         && PixelArray[ pixel_index ].PaintIndex != PaintArray.length.to!long() - 3 )
                     {
                         PixelArray[ pixel_index ].Color
                             = PaintArray[ PixelArray[ pixel_index ].PaintIndex ].AverageColor;
