@@ -18,8 +18,6 @@
     along with Silk.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-// == LOCAL
-
 // -- IMPORTS
 
 import core.stdc.stdlib : exit;
@@ -29,8 +27,6 @@ import std.file : read, write;
 import std.math : sqrt;
 import std.stdio : writeln;
 import std.string : startsWith;
-
-// == GLOBAL
 
 // -- TYPES
 
