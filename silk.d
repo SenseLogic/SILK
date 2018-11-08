@@ -383,7 +383,7 @@ struct IMAGE
         COLOR
             color;
 
-        PixelArray = [];
+        PixelArray = null;
         PixelArray.length = PixelCount;
 
         foreach ( line_index; 0 .. LineCount )
