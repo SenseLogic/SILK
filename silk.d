@@ -1,7 +1,7 @@
 /*
     This file is part of the Silk distribution.
 
-    https://github.com/senselogic/REDRAW
+    https://github.com/senselogic/SILK
 
     Copyright (C) 2017 Eric Pelzer (ecstatic.coder@gmail.com)
 
@@ -32,12 +32,61 @@ import std.string : startsWith;
 
 struct COLOR
 {
+    // -- ATTRIBUTES
+
     float
         Red,
         Green,
         Blue;
 
+    // -- INQUIRIES
+
+    long GetNatural24(
+        )
+    {
+        return Blue.to!long() | ( Green.to!long() << 8 ) | ( Red.to!long() << 16 );
+    }
+
     // ~~
+
+    float GetDistance(
+        ref COLOR color
+        )
+    {
+        float
+            blue_offset,
+            green_offset,
+            red_mean,
+            red_offset,
+            square_distance;
+
+        red_mean = ( Red + color.Red ) * 0.5f;
+        red_offset = Red - color.Red;
+        green_offset = Green - color.Green;
+        blue_offset = Blue - color.Blue;
+
+        square_distance
+            = ( ( ( 512.0f + red_mean ) * red_offset * red_offset ) / 256.0f )
+              + 4.0f * green_offset * green_offset
+              + ( ( ( 767.0f - red_mean ) * blue_offset * blue_offset ) / 256.0f );
+
+        return sqrt( square_distance );
+    }
+
+    // ~~
+
+    float GetBrightnessContrastComponent(
+        float component,
+        float brightness_offset,
+        float contrast_factor
+        )
+    {
+        component = ( ( component / 255.0f - 0.5f ) * contrast_factor + 0.5f + brightness_offset ) * 255.0f;
+
+        return min( max( component, 0.0f ), 255.0f );
+    }
+
+    // -- OPERATIONS
 
     void Clear(
         )
@@ -97,53 +146,6 @@ struct COLOR
 
     // ~~
 
-    long GetNatural24(
-        )
-    {
-        return Blue.to!long() | ( Green.to!long() << 8 ) | ( Red.to!long() << 16 );
-    }
-
-    // ~~
-
-    float GetDistance(
-        ref COLOR color
-        )
-    {
-        float
-            blue_offset,
-            green_offset,
-            red_mean,
-            red_offset,
-            square_distance;
-
-        red_mean = ( Red + color.Red ) * 0.5f;
-        red_offset = Red - color.Red;
-        green_offset = Green - color.Green;
-        blue_offset = Blue - color.Blue;
-
-        square_distance
-            = ( ( ( 512.0f + red_mean ) * red_offset * red_offset ) / 256.0f )
-              + 4.0f * green_offset * green_offset
-              + ( ( ( 767.0f - red_mean ) * blue_offset * blue_offset ) / 256.0f );
-
-        return sqrt( square_distance );
-    }
-
-    // ~~
-
-    float GetBrightnessContrastComponent(
-        float component,
-        float brightness_offset,
-        float contrast_factor
-        )
-    {
-        component = ( ( component / 255.0f - 0.5f ) * contrast_factor + 0.5f + brightness_offset ) * 255.0f;
-
-        return min( max( component, 0.0f ), 255.0f );
-    }
-
-    // ~~
-
     void Highlight(
         float brightness_offset,
         float contrast_factor
@@ -159,13 +161,15 @@ struct COLOR
 
 struct PAINT
 {
+    // -- ATTRIBUTES
+
     COLOR
         Color,
         AverageColor;
     long
         PixelCount;
 
-    // ~~
+    // -- OPERATIONS
 
     void Set(
         float red = 0.0f,
@@ -211,6 +215,8 @@ struct PAINT
 
 struct PIXEL
 {
+    // -- ATTRIBUTES
+
     COLOR
         Color,
         PriorColor,
@@ -223,6 +229,8 @@ struct PIXEL
 
 struct IMAGE
 {
+    // -- ATTRIBUTES
+
     ubyte[]
         ByteArray;
     long
@@ -237,7 +245,7 @@ struct IMAGE
     PAINT[]
         PaintArray;
 
-    // ~~
+    // -- INQUIRIES
 
     long GetNatural8(
         long byte_index
@@ -283,6 +291,76 @@ struct IMAGE
     }
 
     // ~~
+
+    long GetPixelIndex(
+        long line_index,
+        long column_index
+        )
+    {
+        return line_index * ColumnCount + column_index;
+    }
+
+    // ~~
+
+    long GetCheckedPixelIndex(
+        long line_index,
+        long column_index
+        )
+    {
+        if ( line_index >= 0
+             && line_index < LineCount
+             && column_index >= 0
+             && column_index < ColumnCount )
+        {
+            return line_index * ColumnCount + column_index;
+        }
+        else
+        {
+            return -1;
+        }
+    }
+
+    // ~~
+
+    long GetByteIndex(
+        long line_index,
+        long column_index
+        )
+    {
+        return FirstByteIndex + line_index * LineByteCount + column_index * PixelByteCount;
+    }
+
+    // ~~
+
+    long GetPaintIndex(
+        ref COLOR color
+        )
+    {
+        float
+            best_color_distance,
+            color_distance;
+        long
+            best_paint_index;
+
+        best_paint_index = -1;
+        best_color_distance = 0.0;
+
+        foreach ( paint_index; 0 .. PaintArray.length )
+        {
+            color_distance = color.GetDistance( PaintArray[ paint_index ].Color );
+
+            if ( best_paint_index < 0
+                 || color_distance < best_color_distance )
+            {
+                best_paint_index = paint_index;
+                best_color_distance = color_distance;
+            }
+        }
+
+        return best_paint_index;
+    }
+
+    // -- OPERATIONS
 
     void SetNatural24(
         long byte_index,
@@ -330,46 +408,6 @@ struct IMAGE
         writeln( "Writing file : ", file_path );
 
         file_path.write( ByteArray );
-    }
-
-    // ~~
-
-    long GetPixelIndex(
-        long line_index,
-        long column_index
-        )
-    {
-        return line_index * ColumnCount + column_index;
-    }
-
-    // ~~
-
-    long GetCheckedPixelIndex(
-        long line_index,
-        long column_index
-        )
-    {
-        if ( line_index >= 0
-             && line_index < LineCount
-             && column_index >= 0
-             && column_index < ColumnCount )
-        {
-            return line_index * ColumnCount + column_index;
-        }
-        else
-        {
-            return -1;
-        }
-    }
-
-    // ~~
-
-    long GetByteIndex(
-        long line_index,
-        long column_index
-        )
-    {
-        return FirstByteIndex + line_index * LineByteCount + column_index * PixelByteCount;
     }
 
     // ~~
@@ -560,36 +598,6 @@ struct IMAGE
                 }
             }
         }
-    }
-
-    // ~~
-
-    long GetPaintIndex(
-        ref COLOR color
-        )
-    {
-        float
-            best_color_distance,
-            color_distance;
-        long
-            best_paint_index;
-
-        best_paint_index = -1;
-        best_color_distance = 0.0;
-
-        foreach ( paint_index; 0 .. PaintArray.length )
-        {
-            color_distance = color.GetDistance( PaintArray[ paint_index ].Color );
-
-            if ( best_paint_index < 0
-                 || color_distance < best_color_distance )
-            {
-                best_paint_index = paint_index;
-                best_color_distance = color_distance;
-            }
-        }
-
-        return best_paint_index;
     }
 
     // ~~
