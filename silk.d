@@ -20,6 +20,8 @@
 
 // -- IMPORTS
 
+import arsd.color : Color, MemoryImage, TrueColorImage;
+import arsd.png : readPng, writePng;
 import core.stdc.stdlib : exit;
 import std.algorithm : max, min;
 import std.conv : to;
@@ -35,19 +37,11 @@ struct COLOR
     // -- ATTRIBUTES
 
     float
-        Red,
-        Green,
-        Blue;
+        Red = 0.0f,
+        Green = 0.0f,
+        Blue = 0.0f;
 
     // -- INQUIRIES
-
-    long GetNatural24(
-        )
-    {
-        return Blue.to!long() | ( Green.to!long() << 8 ) | ( Red.to!long() << 16 );
-    }
-
-    // ~~
 
     float GetDistance(
         ref COLOR color
@@ -129,19 +123,6 @@ struct COLOR
         Red /= divider;
         Green /= divider;
         Blue /= divider;
-    }
-
-    // ~~
-
-    void SetFromNatural24(
-        long natural
-        )
-    {
-        Set(
-            ( natural >> 16 ) & 255,
-            ( natural >> 8 ) & 255,
-            natural & 255
-            );
     }
 
     // ~~
@@ -235,62 +216,13 @@ struct IMAGE
         ByteArray;
     long
         LineCount,
-        ColumnCount,
-        PixelCount,
-        PixelByteCount,
-        LineByteCount,
-        FirstByteIndex;
+        ColumnCount;
     PIXEL[]
         PixelArray;
     PAINT[]
         PaintArray;
 
     // -- INQUIRIES
-
-    long GetNatural8(
-        long byte_index
-        )
-    {
-        return ByteArray[ byte_index ];
-    }
-
-    // ~~
-
-    long GetNatural16(
-        long byte_index
-        )
-    {
-        return
-            GetNatural8( byte_index )
-            | ( GetNatural8( byte_index + 1 ) << 8 );
-    }
-
-    // ~~
-
-    long GetNatural24(
-        long byte_index
-        )
-    {
-        return
-            GetNatural8( byte_index )
-            | ( GetNatural8( byte_index + 1 ) << 8 )
-            | ( GetNatural8( byte_index + 2 ) << 16 );
-    }
-
-    // ~~
-
-    long GetNatural32(
-        long byte_index
-        )
-    {
-        return
-            GetNatural8( byte_index )
-            | ( GetNatural8( byte_index + 1 ) << 8 )
-            | ( GetNatural8( byte_index + 2 ) << 16 )
-            | ( GetNatural8( byte_index + 3 ) << 24 );
-    }
-
-    // ~~
 
     long GetPixelIndex(
         long line_index,
@@ -318,16 +250,6 @@ struct IMAGE
         {
             return -1;
         }
-    }
-
-    // ~~
-
-    long GetByteIndex(
-        long line_index,
-        long column_index
-        )
-    {
-        return FirstByteIndex + line_index * LineByteCount + column_index * PixelByteCount;
     }
 
     // ~~
@@ -362,40 +284,47 @@ struct IMAGE
 
     // -- OPERATIONS
 
-    void SetNatural24(
-        long byte_index,
-        long natural
-        )
-    {
-        ByteArray[ byte_index ] = ( natural & 255 ).to!ubyte();
-        ByteArray[ byte_index + 1 ] = ( ( natural >> 8 ) & 255 ).to!ubyte();
-        ByteArray[ byte_index + 2 ] = ( ( natural >> 16 ) & 255 ).to!ubyte();
-    }
-
-    // ~~
-
     void ReadFile(
         string file_path
         )
     {
+        long
+            column_index,
+            line_index,
+            pixel_index;
+        Color
+            color;
+        TrueColorImage
+            true_color_image;
+        COLOR
+            pixel_color;
+
         writeln( "Reading file : ", file_path );
 
-        ByteArray = cast( ubyte[] )file_path.read();
+        true_color_image = readPng( file_path ).getAsTrueColorImage();
 
-        if ( GetNatural8( 0 ) == 'B'
-             && GetNatural8( 1 ) == 'M'
-             && GetNatural32( 30 ) == 0 )
+        LineCount = true_color_image.height();
+        ColumnCount = true_color_image.width();
+        PixelArray.length = LineCount * ColumnCount;
+
+        for ( line_index = 0;
+              line_index < LineCount;
+              ++line_index )
         {
-            LineCount = GetNatural32( 22 );
-            ColumnCount = GetNatural32( 18 );
-            PixelCount = LineCount * ColumnCount;
-            PixelByteCount = GetNatural16( 28 ) >> 3;
-            LineByteCount = ( ( ColumnCount * PixelByteCount + 3 ) >> 2 ) << 2;
-            FirstByteIndex = GetNatural32( 10 );
-        }
-        else
-        {
-            Abort( "Invalid file format" );
+            for ( column_index = 0;
+                  column_index < ColumnCount;
+                  ++column_index )
+            {
+                color = true_color_image.getPixel( cast( int )column_index, cast( int )line_index );
+
+                pixel_color.Red = color.r.to!float();
+                pixel_color.Green = color.g.to!float();
+                pixel_color.Blue = color.b.to!float();
+
+                pixel_index = GetPixelIndex( line_index, column_index );
+                PixelArray[ pixel_index ].Color = pixel_color;
+                PixelArray[ pixel_index ].StoredColor = pixel_color;
+            }
         }
     }
 
@@ -405,59 +334,42 @@ struct IMAGE
         string file_path
         )
     {
-        writeln( "Writing file : ", file_path );
-
-        file_path.write( ByteArray );
-    }
-
-    // ~~
-
-    void SetPixelArray(
-        )
-    {
         long
-            byte_index,
+            column_index,
+            line_index,
             pixel_index;
-        COLOR
+        Color
             color;
+        TrueColorImage
+            true_color_image;
+        COLOR
+            pixel_color;
 
-        PixelArray = null;
-        PixelArray.length = PixelCount;
+        writeln( "Writing filee : ", file_path );
 
-        foreach ( line_index; 0 .. LineCount )
+        true_color_image = new TrueColorImage( cast( int )ColumnCount, cast( int )LineCount );
+
+        for ( line_index = 0;
+              line_index < LineCount;
+              ++line_index )
         {
-            foreach ( column_index; 0 .. ColumnCount )
+            for ( column_index = 0;
+                  column_index < ColumnCount;
+                  ++column_index )
             {
                 pixel_index = GetPixelIndex( line_index, column_index );
-                byte_index = GetByteIndex( line_index, column_index );
+                pixel_color = PixelArray[ pixel_index ].Color;
 
-                color.SetFromNatural24( GetNatural24( byte_index ) );
+                color.r = pixel_color.Red.to!ubyte();
+                color.g = pixel_color.Green.to!ubyte();
+                color.b = pixel_color.Blue.to!ubyte();
+                color.a = 255;
 
-                PixelArray[ pixel_index ].Color = color;
-                PixelArray[ pixel_index ].StoredColor = color;
+                true_color_image.setPixel( cast( int )column_index, cast( int )line_index, color );
             }
         }
-    }
 
-    // ~~
-
-    void SetByteArray(
-        )
-    {
-        long
-            byte_index,
-            pixel_index;
-
-        foreach ( line_index; 0 .. LineCount )
-        {
-            foreach ( column_index; 0 .. ColumnCount )
-            {
-                pixel_index = line_index * ColumnCount + column_index;
-                byte_index = FirstByteIndex + line_index * LineByteCount + column_index * PixelByteCount;
-
-                SetNatural24( byte_index, PixelArray[ pixel_index ].Color.GetNatural24() );
-            }
-        }
+        writePng( file_path, true_color_image );
     }
 
     // ~~
@@ -732,7 +644,6 @@ void main(
         argument_array = argument_array[ 0 .. $ - 2 ];
 
         image.ReadFile( input_file_path );
-        image.SetPixelArray();
 
         while ( argument_array.length >= 1
                 && argument_array[ 0 ].startsWith( "--" ) )
@@ -787,7 +698,6 @@ void main(
             Abort( "Invalid option : " ~ argument_array[ 0 ] );
         }
 
-        image.SetByteArray();
         image.WriteFile( output_file_path );
     }
     else

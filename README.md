@@ -20,13 +20,13 @@ Install the [DMD 2 compiler](https://dlang.org/download.html) (using the MinGW s
 Build the executable with the following command line :
 
 ```bash
-dmd -m64 silk.d
+dmd -m64 silk.d color.d png.d
 ```
 
 ## Command line
 
 ```bash
-silk [options] input_file.bmp output_file.bmp
+silk [options] input_file.png output_file.png
 ```
 
 ### Options
@@ -41,26 +41,30 @@ silk [options] input_file.bmp output_file.bmp
 ### Examples
 
 ```bash
-silk --smooth 1 9 128.0 input.bmp output.bmp
+silk --smooth 1 9 128.0 input.png output.png
 ```
 
 Smooth the image.
 
 ```bash
-silk --highlight 0.25 2.0 input.bmp output.bmp
+silk --highlight 0.25 2.0 input.png output.png
 ```
 
 Highlight the image.
 
 ```bash
-silk --smooth 1 9 128.0 --store --highlight 0.25 2.0 --posterize 3 1 input.bmp output.bmp
+silk --smooth 1 9 128.0 --store --highlight 0.25 2.0 --posterize 3 1 input.png output.png
 ```
 
 Smooth, highlight and posterize the image.
 
+## Dependencies
+
+*   [ARSD PNG library](https://github.com/adamdruppe/arsd)
+
 ## Limitations
 
-Only supports uncompressed 24 bits BMP files.
+Only supports RGB PNG files.
 
 ## Version
 
