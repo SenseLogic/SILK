@@ -225,8 +225,8 @@ struct IMAGE
     // -- INQUIRIES
 
     long GetPixelIndex(
-        long line_index,
-        long column_index
+        long column_index,
+        long line_index
         )
     {
         return line_index * ColumnCount + column_index;
@@ -235,14 +235,14 @@ struct IMAGE
     // ~~
 
     long GetCheckedPixelIndex(
-        long line_index,
-        long column_index
+        long column_index,
+        long line_index
         )
     {
-        if ( line_index >= 0
-             && line_index < LineCount
-             && column_index >= 0
-             && column_index < ColumnCount )
+        if ( column_index >= 0
+             && column_index < ColumnCount
+             && line_index >= 0
+             && line_index < LineCount )
         {
             return line_index * ColumnCount + column_index;
         }
@@ -321,7 +321,7 @@ struct IMAGE
                 pixel_color.Green = color.g.to!float();
                 pixel_color.Blue = color.b.to!float();
 
-                pixel_index = GetPixelIndex( line_index, column_index );
+                pixel_index = GetPixelIndex( column_index, line_index );
                 PixelArray[ pixel_index ].Color = pixel_color;
                 PixelArray[ pixel_index ].StoredColor = pixel_color;
             }
@@ -357,7 +357,7 @@ struct IMAGE
                   column_index < ColumnCount;
                   ++column_index )
             {
-                pixel_index = GetPixelIndex( line_index, column_index );
+                pixel_index = GetPixelIndex( column_index, line_index );
                 pixel_color = PixelArray[ pixel_index ].Color;
 
                 color.r = pixel_color.Red.to!ubyte();
@@ -441,7 +441,7 @@ struct IMAGE
             {
                 foreach ( column_index; 0 .. ColumnCount )
                 {
-                    pixel_index = GetPixelIndex( line_index, column_index );
+                    pixel_index = GetPixelIndex( column_index, line_index );
 
                     pixel_color = PixelArray[ pixel_index ].PriorColor;
                     average_color.Clear();
@@ -452,7 +452,7 @@ struct IMAGE
                         foreach ( column_offset; -pixel_distance .. pixel_distance + 1 )
                         {
                             other_pixel_index
-                                = GetCheckedPixelIndex( line_index + line_offset, column_index + column_offset );
+                                = GetCheckedPixelIndex( column_index + column_offset, line_index + line_offset );
 
                             if ( other_pixel_index >= 0 )
                             {
@@ -566,7 +566,7 @@ struct IMAGE
             {
                 foreach ( column_index; 0 .. ColumnCount )
                 {
-                    pixel_index = GetPixelIndex( line_index, column_index );
+                    pixel_index = GetPixelIndex( column_index, line_index );
 
                     if ( ( clustering_mode & 4 ) == 0
                          && PixelArray[ pixel_index ].PaintIndex != 0
@@ -589,7 +589,7 @@ struct IMAGE
             {
                 foreach ( column_index; 0 .. ColumnCount )
                 {
-                    pixel_index = GetPixelIndex( line_index, column_index );
+                    pixel_index = GetPixelIndex( column_index, line_index );
 
                     PixelArray[ pixel_index ].Color
                         = PaintArray[ GetPaintIndex( PixelArray[ pixel_index ].Color ) ].Color;
