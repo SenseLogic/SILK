@@ -36,48 +36,48 @@ struct COLOR
 {
     // -- ATTRIBUTES
 
-    float
-        Red = 0.0f,
-        Green = 0.0f,
-        Blue = 0.0f;
+    double
+        Red = 0.0,
+        Green = 0.0,
+        Blue = 0.0;
 
     // -- INQUIRIES
 
-    float GetDistance(
+    double GetDistance(
         ref COLOR color
         )
     {
-        float
+        double
             blue_offset,
             green_offset,
             red_mean,
             red_offset,
             square_distance;
 
-        red_mean = ( Red + color.Red ) * 0.5f;
+        red_mean = ( Red + color.Red ) * 0.5;
         red_offset = Red - color.Red;
         green_offset = Green - color.Green;
         blue_offset = Blue - color.Blue;
 
         square_distance
-            = ( ( ( 512.0f + red_mean ) * red_offset * red_offset ) / 256.0f )
-              + 4.0f * green_offset * green_offset
-              + ( ( ( 767.0f - red_mean ) * blue_offset * blue_offset ) / 256.0f );
+            = ( ( ( 512.0 + red_mean ) * red_offset * red_offset ) / 256.0 )
+              + 4.0 * green_offset * green_offset
+              + ( ( ( 767.0 - red_mean ) * blue_offset * blue_offset ) / 256.0 );
 
         return sqrt( square_distance );
     }
 
     // ~~
 
-    float GetBrightnessContrastComponent(
-        float component,
-        float brightness_offset,
-        float contrast_factor
+    double GetBrightnessContrastComponent(
+        double component,
+        double brightness_offset,
+        double contrast_factor
         )
     {
-        component = ( ( component / 255.0f - 0.5f ) * contrast_factor + 0.5f + brightness_offset ) * 255.0f;
+        component = ( ( component / 255.0 - 0.5 ) * contrast_factor + 0.5 + brightness_offset ) * 255.0;
 
-        return min( max( component, 0.0f ), 255.0f );
+        return min( max( component, 0.0 ), 255.0 );
     }
 
     // -- OPERATIONS
@@ -85,17 +85,17 @@ struct COLOR
     void Clear(
         )
     {
-        Red = 0.0f;
-        Green = 0.0f;
-        Blue = 0.0f;
+        Red = 0.0;
+        Green = 0.0;
+        Blue = 0.0;
     }
 
     // ~~
 
     void Set(
-        float red = 0.0f,
-        float green = 0.0f,
-        float blue = 0.0f
+        double red = 0.0,
+        double green = 0.0,
+        double blue = 0.0
         )
     {
         Red = red;
@@ -117,7 +117,7 @@ struct COLOR
     // ~~
 
     void Divide(
-        float divider
+        double divider
         )
     {
         Red /= divider;
@@ -128,8 +128,8 @@ struct COLOR
     // ~~
 
     void Highlight(
-        float brightness_offset,
-        float contrast_factor
+        double brightness_offset,
+        double contrast_factor
         )
     {
         Red = GetBrightnessContrastComponent( Red, brightness_offset, contrast_factor );
@@ -153,9 +153,9 @@ struct PAINT
     // -- OPERATIONS
 
     void Set(
-        float red = 0.0f,
-        float green = 0.0f,
-        float blue = 0.0f
+        double red = 0.0,
+        double green = 0.0,
+        double blue = 0.0
         )
     {
         Color.Set( red, green, blue );
@@ -215,8 +215,8 @@ struct IMAGE
     ubyte[]
         ByteArray;
     long
-        LineCount,
-        ColumnCount;
+        ColumnCount,
+        LineCount;
     PIXEL[]
         PixelArray;
     PAINT[]
@@ -258,7 +258,7 @@ struct IMAGE
         ref COLOR color
         )
     {
-        float
+        double
             best_color_distance,
             color_distance;
         long
@@ -317,9 +317,9 @@ struct IMAGE
             {
                 color = true_color_image.getPixel( cast( int )column_index, cast( int )line_index );
 
-                pixel_color.Red = color.r.to!float();
-                pixel_color.Green = color.g.to!float();
-                pixel_color.Blue = color.b.to!float();
+                pixel_color.Red = color.r.to!double();
+                pixel_color.Green = color.g.to!double();
+                pixel_color.Blue = color.b.to!double();
 
                 pixel_index = GetPixelIndex( column_index, line_index );
                 PixelArray[ pixel_index ].Color = pixel_color;
@@ -388,8 +388,8 @@ struct IMAGE
     // ~~
 
     void Highlight(
-        float brightness_offset,
-        float contrast_factor
+        double brightness_offset,
+        double contrast_factor
         )
     {
         writeln( "Highlighting image : ", brightness_offset, " ", contrast_factor );
@@ -416,7 +416,7 @@ struct IMAGE
     void Smooth(
         long pass_count,
         long pixel_distance,
-        float color_distance
+        double color_distance
         )
     {
         long
@@ -435,7 +435,7 @@ struct IMAGE
         {
             SetPriorColor();
 
-            float md = 0.0;
+            double md = 0.0;
 
             foreach ( line_index; 0 .. LineCount )
             {
@@ -486,7 +486,7 @@ struct IMAGE
         long component_count
         )
     {
-        float[]
+        double[]
             component_array;
         PAINT
             paint;
@@ -495,7 +495,7 @@ struct IMAGE
 
         foreach ( component_index; 0 .. component_count )
         {
-            component_array[ component_index ] = ( 255.0f * component_index ) / ( component_count - 1 );
+            component_array[ component_index ] = ( 255.0 * component_index ) / ( component_count - 1 );
         }
 
         foreach ( red; component_array )
@@ -662,7 +662,7 @@ void main(
                 image.Smooth(
                     argument_array[ 0 ].to!long(),
                     argument_array[ 1 ].to!long(),
-                    argument_array[ 2 ].to!float()
+                    argument_array[ 2 ].to!double()
                     );
 
                 argument_array = argument_array[ 3 .. $ ];
@@ -671,8 +671,8 @@ void main(
                       && argument_array.length >= 2 )
             {
                 image.Highlight(
-                    argument_array[ 0 ].to!float(),
-                    argument_array[ 1 ].to!float()
+                    argument_array[ 0 ].to!double(),
+                    argument_array[ 1 ].to!double()
                     );
 
                 argument_array = argument_array[ 2 .. $ ];
