@@ -6,12 +6,12 @@ Simple image enhancer.
 
 ## Samples
 
-![](https://github.com/senselogic/SILK/blob/master/SAMPLE/mountain.png)
-![](https://github.com/senselogic/SILK/blob/master/SAMPLE/mountain_smooth.png)
+![](https://github.com/senselogic/SILK/blob/master/SCREENSHOT/mountain.png)
+![](https://github.com/senselogic/SILK/blob/master/SCREENSHOT/mountain_smooth.png)
 
-![](https://github.com/senselogic/SILK/blob/master/SAMPLE/tux.png)
-![](https://github.com/senselogic/SILK/blob/master/SAMPLE/tux_smooth.png)
-![](https://github.com/senselogic/SILK/blob/master/SAMPLE/tux_smooth_highlight_posterize.png)
+![](https://github.com/senselogic/SILK/blob/master/SCREENSHOT/tux.png)
+![](https://github.com/senselogic/SILK/blob/master/SCREENSHOT/tux_smooth.png)
+![](https://github.com/senselogic/SILK/blob/master/SCREENSHOT/tux_smooth_highlight_posterize.png)
 
 ## Installation
 
