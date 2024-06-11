@@ -345,7 +345,7 @@ struct IMAGE
         COLOR
             pixel_color;
 
-        writeln( "Writing filee : ", file_path );
+        writeln( "Writing file : ", file_path );
 
         true_color_image = new TrueColorImage( cast( int )ColumnCount, cast( int )LineCount );
 
@@ -703,16 +703,16 @@ void main(
     else
     {
         writeln( "Usage :" );
-        writeln( "    silk [options] input_file.bmp output_file.bmp" );
+        writeln( "    silk [options] input_file.png output_file.png" );
         writeln( "Options :" );
         writeln( "    --store" );
         writeln( "    --smooth pass_count pixel_distance color_distance" );
         writeln( "    --highlight brightness_offset contrast_factor" );
         writeln( "    --posterize color_component_count clustering_mode" );
         writeln( "Examples :" );
-        writeln( "    silk --smooth 1 9 128.0 input.bmp output.bmp" );
-        writeln( "    silk --highlight 0.25 2.0 input.bmp output.bmp" );
-        writeln( "    silk --smooth 1 9 128.0 --store --highlight 0.25 2.0 --posterize 3 1 input.bmp output.bmp" );
+        writeln( "    silk --smooth 1 9 128.0 input.png output.png" );
+        writeln( "    silk --highlight 0.25 2.0 input.png output.png" );
+        writeln( "    silk --smooth 1 9 128.0 --store --highlight 0.25 2.0 --posterize 3 1 input.png output.png" );
 
         Abort( "Invalid arguments : " ~ argument_array.to!string() );
     }
